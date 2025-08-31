@@ -17,9 +17,15 @@ mongoose.connect(uri)
 
 const PostSchema = new mongoose.Schema ({
     title: String,
-    // author:
+    // author: TODO
     content: String,
-    date: Date
+    date: Date,
+    comments: [ // treated as subdocument by Mongoose - automatically creates an _id field.
+        {
+            author: String, 
+            text: String
+        }
+    ]
 })
 
 const Post = mongoose.model("Post", PostSchema);
@@ -37,6 +43,19 @@ app.post('/api/posts', async (req, res) => {
     })
     await post.save()
     res.status(201).json(post); // set response status to 200, sets the Content-Type header to application/json and attach task in the body.
+})
+
+app.post('/api/posts/:id/comments', async(req, res) => {
+    try {
+        console.log(`adding comment ${req.body.text} for post ${req.params.id}`);
+        const post = await Post.findById(req.params.id);
+        post.comments = [...post.comments, {author: req.body.author, text: req.body.text}];
+        await post.save();
+        console.log(`comment created successfully!`)
+        res.json(post.comments);
+    } catch (e) {
+        res.status(404).json({message: e.message});
+    }
 })
 
 app.delete('/api/posts/:id', async (req, res) => {

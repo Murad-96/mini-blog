@@ -38,6 +38,27 @@ function App() {
     }
   }
 
+  const createComment = async (postId, comment) => {
+    try {
+      console.log(`Attempting to add comment ${comment} for comment ${postId}`);
+      const response = await fetch(url + `/posts/${postId}/comments`, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({author: 'defaultAuthor', text: comment})
+      })
+      if (!response.ok) {
+        console.log('Failed to post a comment.')
+      }
+      const comments = await response.json();
+      console.log(`comments from api call: ${comments}`)
+      return comments
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
   const deletePost = async (id) => {
     try {
       console.log(`Attempting to delete post id ${id}`)
@@ -62,7 +83,7 @@ function App() {
     <div>
       <Header/>
       <PostForm newPostFn={createPost}/>
-      <PostList posts={posts} deletePostFn={deletePost}/>
+      <PostList posts={posts} deletePostFn={deletePost} addCommentFn={createComment}/>
     </div>
   );
 }

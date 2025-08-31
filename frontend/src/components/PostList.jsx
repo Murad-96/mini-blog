@@ -6,11 +6,17 @@ export default function PostList (props) {
         props.deletePostFn(id)
     }
 
-    console.log(`posts from PostList: ${props.posts}`)
+    // console.log(`posts from PostList: ${props.posts}`)
     return (
         <div>
             {props.posts.map(p => (
-                <Post key={p._id} id={p._id} title={p.title} content={p.content} postDelete={() => handleDelete(p._id)} />
+                <Post key={p._id} 
+                    id={p._id} 
+                    title={p.title} 
+                    content={p.content} 
+                    comments={p.comments}
+                    addComment={props.addCommentFn}
+                    postDelete={() => handleDelete(p._id)} />
              ))}
         </div>
         
