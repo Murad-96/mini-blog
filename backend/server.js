@@ -1,19 +1,55 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const cors = require('cors')
+const bcrypt = require('bcrypt')
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
 require('dotenv').config()
 
 const app = express();
 const port = 3001;
 
+const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "http://localhost:3000"
+
 app.use(express.json())
-app.use(cors())
+app.use(cors({
+    origin: FRONTEND_ORIGIN,
+    credentials: true, // allow cookies
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"]
+}))
+app.use(cookieParser()) // for parsing cookies
 
 const uri = process.env.MONGO_URI
 mongoose.connect(uri)
 .then(()=>console.log("✅ Connected to MongoDB with Mongoose!"))
 .catch((err) => console.error('MongoDB connection error:', err));
 
+function authMiddleware(req, res, next) {
+    let token;
+
+    // 1. Try cookie
+    if (req.cookies?.access_token) {
+        token = req.cookies.access_token;
+        console.log(`token from cookies: ${token}`);
+    }
+    
+    // 2. Fallback to Authorization header
+    else {
+        const authHeader = req.headers["authorization"]
+        console.log(`authHeader: ${authHeader}`)
+        token = authHeader && authHeader.split(" ")[1]
+        console.log(`token: ${token}`)
+        if (!token) return res.status(401).json({ message: "No token provided"});
+    }
+    
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) return res.status(403).json({ message: "Invalid token"});
+
+        req.user = user; // attach decoded user to request
+        next();
+    });
+}
 
 const PostSchema = new mongoose.Schema ({
     title: String,
@@ -28,14 +64,65 @@ const PostSchema = new mongoose.Schema ({
     ]
 })
 
+const UserSchema = new mongoose.Schema ({
+    username: String,
+    email: String,
+    password: String,
+    posts: [{type: mongoose.Schema.Types.ObjectId, ref: 'Post'}]
+})
+
 const Post = mongoose.model("Post", PostSchema);
+
+const User = mongoose.model("User", UserSchema);
+
+app.post('/api/auth/register', async (req, res) => {
+    try {
+        const {username, email, password } = req.body;
+        const existingUser = await User.findOne({ email })
+        if (existingUser) return res.status(400).json({message: "User already exists."});
+        console.log(`password: ${password}`)
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User (
+            {
+                username,
+                email, 
+                password: hashedPassword,
+            }
+        )
+        await newUser.save()
+        res.status(201).json({message: "User registered successfully."})
+    } catch (e) {
+        res.status(500).json({message: e.message})
+    }
+})
+
+app.post('/api/login', async (req, res) => {
+    try {
+        const {email, password} = req.body;
+        const user = await User.findOne({ email });
+        if (!user) return res.status(400).json({message: "User not found."});
+        const isMatch = bcrypt.compare(password, user.password);
+        if (!isMatch) return res.status(401).json({ message: "Invalid credentials." });
+        const token = jwt.sign(
+            { id: user._id },   // 1) payload (claims)
+            process.env.JWT_SECRET,              // 2) signing key (HMAC secret)
+            { expiresIn: "1h" }                  // 3) token lifetime
+        );
+        res.cookie("access_token", token, { // adds Set-Cookie header
+            httpOnly: true,
+        })
+        res.json({ user}) // include JWT token in the response too.
+    }   catch (err) {
+        res.status(500).json({message: err.message})
+    }
+})
 
 app.get('/api/posts', async (req, res) => {
     const posts = await Post.find();
     res.json(posts);
 })
 
-app.post('/api/posts', async (req, res) => {
+app.post('/api/posts', authMiddleware, async (req, res) => {
     const post = new Post({
         title: req.body.title, 
         content: req.body.content,

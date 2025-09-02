@@ -10,7 +10,6 @@ export default function Post (props) {
     const handleCreateComment = async () => {
         // call a comment creating fn
         const postComments = await props.addComment(props.id, commentText)
-        // setComments
         setComments(postComments)
         setCommentText('')
     }

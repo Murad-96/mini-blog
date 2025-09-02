@@ -10,6 +10,21 @@ function App() {
 
   const url = 'http://localhost:3001/api'
 
+  const login = async (email, password) => {
+    const response = await fetch(url + '/login', {
+      method: "POST",
+      body: JSON.stringify({email, password})
+    })
+    if (!response.ok) {
+      throw new Error("Login failed");
+    }
+    const data = await response.json();
+    const token = data.token;
+    localStorage.setItem(token); // store JWT in localstorage (if server returns it)
+    console.log("Stored token:", data.token);
+    return data.user;
+  }
+
   const getPosts = async () => {
     const response = await fetch(url + '/posts');
     const blogPosts = await response.json(); // This does not synchronously give you the parsed JSON. It returns a Promise because parsing the body might take time (streaming, decoding, parsing JSON text).
@@ -20,10 +35,13 @@ function App() {
   const createPost = async (title, content) => {
     try {
       console.log(`Attempting to create a post about: ${title}`)
+      const token = localStorage.getItem("token"); // if JWT is stored in the localStorage
       const response = await fetch(url + '/posts', {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`, // send the token with authorization header (Option 1)
+        "Credentials": "include"            // 👈 required so the browser sends cookies cross-origin (Option 2)
       },
       body: JSON.stringify({ title: title, content: content, author: "default" })
     })
