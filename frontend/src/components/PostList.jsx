@@ -9,6 +9,7 @@ export default function PostList (props) {
     // console.log(`posts from PostList: ${props.posts}`)
     return (
         <div>
+            <h2>Latest posts</h2>
             {props.posts.map(p => (
                 <Post key={p._id} 
                     id={p._id} 

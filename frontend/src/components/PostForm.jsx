@@ -7,29 +7,31 @@ export default function PostForm (props) {
     const username = useSelector(state => state.user.username)
 
     return (
-        <form onSubmit={(e) => {
-                e.preventDefault();
-                props.newPostFn(postTitle, postContent, username);
-                }}>
-            <label>
-            Post title:
-            <input type="text"
-                    onChange={e => setPostTitle(e.target.value)}></input>
-            </label>
-            <br/>
-            <label>
-            Edit your post:
-            <textarea
-                name="postContent"
-                rows={4}
-                cols={40}
-                onChange={e => setPostContent(e.target.value)}
-            />
-            </label>
-            <hr/>
-            <button type="reset">Reset edits</button>
-            <button type="submit">Save post</button>
-        </form>
-        
+        <div>
+            <h3>Create a new post</h3>
+            <form onSubmit={(e) => {
+                    e.preventDefault();
+                    props.newPostFn(postTitle, postContent, username);
+                    }}>
+                <label>
+                Post title:
+                <input type="text"
+                        onChange={e => setPostTitle(e.target.value)}></input>
+                </label>
+                <br/>
+                <label>
+                Edit your post:
+                <textarea
+                    name="postContent"
+                    rows={4}
+                    cols={40}
+                    onChange={e => setPostContent(e.target.value)}
+                />
+                </label>
+                <hr/>
+                <button type="reset">Reset edits</button>
+                <button type="submit">Save post</button>
+            </form>
+        </div>
     )
 }
