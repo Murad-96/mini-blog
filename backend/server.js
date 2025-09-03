@@ -13,7 +13,7 @@ const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "https://mini-blog-xi-eig
 
 app.use(express.json())
 app.use(cors({
-    origin: "https://mini-blog-xi-eight.vercel.app",
+    origin: FRONTEND_ORIGIN,
     credentials: true, // allow cookies
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"]
@@ -127,13 +127,19 @@ app.get('/api/posts', async (req, res) => {
 app.post('/api/posts', authMiddleware, async (req, res) => {
     try {
         console.log(`creating a post by ${req.body.author}`)
+        const user = await User.findOne({ username: req.body.author })
+        if (!user) {
+            throw new Error("User not found")
+        }
         const post = new Post({
         title: req.body.title, 
         content: req.body.content,
         author: req.body.author,
         date: Date.now()
         });
-        await post.save()
+        await post.save();
+        user.posts.push(post);
+        await user.save();
         res.status(201).json(post); // set response status to 200, sets the Content-Type header to application/json and attach post in the body.
     } catch (e) {
         res.status(404).json({message: e.message});
@@ -158,6 +164,12 @@ app.delete('/api/posts/:id', async (req, res) => {
     console.log(`deleting post id ${deleteId}`)
     try {
         const post = await Post.findById(deleteId)
+        const user = await User.findOne({ username: post.author })
+        if (!user.posts.includes(deleteId)) {
+            throw new Error("User does not have this post")
+        }
+        user.posts = user.posts.filter(post => post._id.toString() !== deleteId)
+        await user.save();
         await post.deleteOne();
     } catch (e) {
         res.status(404).json({message: e.message})

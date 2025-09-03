@@ -1,11 +1,14 @@
 import { useState } from 'react'
 import PostComment from './PostComment'
 import styles from './Post.css'
+import { useSelector } from 'react-redux';
 
 export default function Post (props) {
 
     const [comments, setComments] = useState(props.comments)
     const [commentText, setCommentText] = useState('')
+
+    const { username, isLoggedIn } = useSelector((state) => state.user);
 
     const handleCreateComment = async () => {
         // call a comment creating fn
@@ -14,12 +17,14 @@ export default function Post (props) {
         setCommentText('')
     }
 
+    const isMyPost = props.author == username
+
     return (
         <div className='post'>
             <h2>{props.title}</h2>
             <p>{props.content}</p>
             <p>{`posted on ${new Date(props.date).toLocaleDateString("en-GB")}  ${new Date(props.date).getHours()}:${new Date(props.date).getMinutes()} by ${props.author}`}</p>
-            <button type="submit" onClick={props.postDelete}>Delete</button>   
+            {isMyPost && <button type="submit" onClick={props.postDelete}>Delete</button>}   
             <textarea value={commentText} onChange={e => setCommentText(e.target.value)}/>
             <button onClick={handleCreateComment}>Leave comment</button>
             {comments.map(com => (<PostComment  key={com._id} id={com._id} comment={com.text} author={com.author} />)) }
