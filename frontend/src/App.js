@@ -25,16 +25,20 @@ function App() {
     }
     const data = await response.json();
     const token = data.token;
+    console.log(`token received from login: ${token}`)
     localStorage.setItem("token", token); // store JWT in localstorage (if server returns it)
     console.log("Stored token:", data.token);
     return data.user;
   }
 
-  const register = async (username, email, passoword) => {
+  const register = async (username, email, password) => {
     try {
-      const response = await fetch (url + '/login', {
+      const response = await fetch (url + '/auth/register', {
       method: "POST",
-      body: JSON.stringify({username, email, passoword})
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({username, email, password})
       });
       if (!response.ok) {
         throw new Error("Registration failed")
@@ -48,16 +52,22 @@ function App() {
   }
 
   const getPosts = async () => {
-    const response = await fetch(url + '/posts');
-    const blogPosts = await response.json(); // This does not synchronously give you the parsed JSON. It returns a Promise because parsing the body might take time (streaming, decoding, parsing JSON text).
-    console.log(`blogPosts from GET: ${blogPosts}`);
-    setPosts(blogPosts);
+    try {
+      const response = await fetch(url + '/posts');
+      const blogPosts = await response.json(); // This does not synchronously give you the parsed JSON. It returns a Promise because parsing the body might take time (streaming, decoding, parsing JSON text).
+      console.log(`blogPosts from GET: ${blogPosts}`);
+      setPosts(blogPosts);
+    } catch (e) {
+      console.log(e)
+    }
+    
   }
 
   const createPost = async (title, content) => {
     try {
       console.log(`Attempting to create a post about: ${title}`)
       const token = localStorage.getItem("token"); // if JWT is stored in the localStorage
+      console.log(`token sent with createPost: ${token}`)
       const response = await fetch(url + '/posts', {
       method: "POST",
       headers: {
@@ -122,7 +132,7 @@ function App() {
   return (
     <div>
       <Header/>
-      <LoginForm loginFn={login}/>
+      <LoginForm loginFn={login} registerFn={register}/>
       <PostForm newPostFn={createPost}/>
       <PostList posts={posts} deletePostFn={deletePost} addCommentFn={createComment}/>
     </div>

@@ -78,6 +78,7 @@ const User = mongoose.model("User", UserSchema);
 app.post('/api/auth/register', async (req, res) => {
     try {
         const {username, email, password } = req.body;
+        console.log(`attempting registration for ${req.body}`)
         const existingUser = await User.findOne({ email })
         if (existingUser) return res.status(400).json({message: "User already exists."});
         console.log(`password: ${password}`)
@@ -111,7 +112,7 @@ app.post('/api/login', async (req, res) => {
         res.cookie("access_token", token, { // adds Set-Cookie header
             httpOnly: true,
         })
-        res.json({ user}) // include JWT token in the response too.
+        res.json({token, user}) // include JWT token in the response too.
     }   catch (err) {
         res.status(500).json({message: err.message})
     }
@@ -160,5 +161,6 @@ app.delete('/api/posts/:id', async (req, res) => {
 
 // Start the server
 app.listen(port, () => {
+    console.log(FRONTEND_ORIGIN)
     console.log(`Server is running on http://localhost:${port}`);
 })
