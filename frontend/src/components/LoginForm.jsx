@@ -40,18 +40,18 @@ export default function LoginForm (props) {
                 {showRegister && 
                 <label>
                     username: 
-                    <input type="text" onChange={(e) => setUserName(e.target.value)}></input>
+                    <input className="userName" type="text" onChange={(e) => setUserName(e.target.value)}></input>
                 </label>}
                 <br/>
                  <label>
                     Email:
-                    <input type="text" onChange={(e)=>setEmail(e.target.value)}>
+                    <input className="email" type="text" onChange={(e)=>setEmail(e.target.value)}>
                     </input>
                 </label>
                 <br/>
                 <label>
                     Password:
-                    <input type="text" onChange={(e) => setUserPassword(e.target.value)}>
+                    <input className="password" type="text" onChange={(e) => setUserPassword(e.target.value)}>
                     </input>
                 </label>
                 {<button type="submit">{!showRegister ? "Log in" : "Register"}</button>}

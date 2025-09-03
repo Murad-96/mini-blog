@@ -16,7 +16,7 @@ app.use(cors({
     origin: "https://mini-blog-xi-eight.vercel.app",
     credentials: true, // allow cookies
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"]
+    allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token", "Credentials"]
 }))
 app.use(cookieParser()) // for parsing cookies
 
@@ -146,9 +146,9 @@ app.post('/api/posts', authMiddleware, async (req, res) => {
     }
 })
 
-app.post('/api/posts/:id/comments', async(req, res) => {
+app.post('/api/posts/:id/comments', authMiddleware, async(req, res) => {
     try {
-        console.log(`adding comment ${req.body.text} for post ${req.params.id}`);
+        console.log(`adding comment ${req.body.text} by ${req.body.author} for post ${req.params.id}`);
         const post = await Post.findById(req.params.id);
         post.comments = [...post.comments, {author: req.body.author, text: req.body.text}];
         await post.save();

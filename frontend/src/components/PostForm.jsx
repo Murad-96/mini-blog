@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useSelector } from 'react-redux'
+import styles from './PostForm.css'
 
 export default function PostForm (props) {
     const [postContent, setPostContent] = useState('')
@@ -15,13 +16,14 @@ export default function PostForm (props) {
                     }}>
                 <label>
                 Post title:
-                <input type="text"
+                <input className="postTitle" type="text"
                         onChange={e => setPostTitle(e.target.value)}></input>
                 </label>
                 <br/>
                 <label>
                 Edit your post:
                 <textarea
+                    className="postContent"
                     name="postContent"
                     rows={4}
                     cols={40}

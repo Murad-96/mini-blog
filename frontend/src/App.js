@@ -92,15 +92,18 @@ function App() {
     }
   }
 
-  const createComment = async (postId, comment) => {
+  const createComment = async (postId, comment, author) => {
     try {
-      console.log(`Attempting to add comment ${comment} for comment ${postId}`);
+      console.log(`Attempting to add comment ${comment} by ${author} for comment ${postId}`);
+      const token = localStorage.getItem("token");
       const response = await fetch(url + `/posts/${postId}/comments`, {
         method: 'POST',
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          //"Credentials": "include",
+          "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify({author: 'defaultAuthor', text: comment})
+        body: JSON.stringify({author: author, text: comment})
       })
       if (!response.ok) {
         console.log('Failed to post a comment.')

@@ -12,7 +12,7 @@ export default function Post (props) {
 
     const handleCreateComment = async () => {
         // call a comment creating fn
-        const postComments = await props.addComment(props.id, commentText)
+        const postComments = await props.addComment(props.id, commentText, username)
         setComments(postComments)
         setCommentText('')
     }
@@ -26,7 +26,7 @@ export default function Post (props) {
             <p>{`posted on ${new Date(props.date).toLocaleDateString("en-GB")}  ${new Date(props.date).getHours()}:${new Date(props.date).getMinutes()} by ${props.author}`}</p>
             {isMyPost && <button type="submit" onClick={props.postDelete}>Delete</button>}   
             <textarea value={commentText} onChange={e => setCommentText(e.target.value)}/>
-            <button onClick={handleCreateComment}>Leave comment</button>
+            {isLoggedIn && <button className='leaveComment' onClick={handleCreateComment}>Leave comment</button>}
             {comments.map(com => (<PostComment  key={com._id} id={com._id} comment={com.text} author={com.author} />)) }
         </div>
     )
