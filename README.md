@@ -1,3 +1,3 @@
-Frontend deployed at https://vercel.com/muradmagdiyev-gmailcoms-projects/mini-blog
+Frontend deployed at vercel, accessible from https://mini-blog-xi-eight.vercel.app/
 
-Backend deployed at https://mini-blog-u2l2.onrender.com
+Backend deployed on render at https://mini-blog-u2l2.onrender.com
