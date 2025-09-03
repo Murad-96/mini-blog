@@ -125,14 +125,19 @@ app.get('/api/posts', async (req, res) => {
 
 // only authenticated users can create posts
 app.post('/api/posts', authMiddleware, async (req, res) => {
-    const post = new Post({
+    try {
+        console.log(`creating a post by ${req.body.author}`)
+        const post = new Post({
         title: req.body.title, 
         content: req.body.content,
-        author: req.body.username,
+        author: req.body.author,
         date: Date.now()
-    })
-    await post.save()
-    res.status(201).json(post); // set response status to 200, sets the Content-Type header to application/json and attach task in the body.
+        });
+        await post.save()
+        res.status(201).json(post); // set response status to 200, sets the Content-Type header to application/json and attach post in the body.
+    } catch (e) {
+        res.status(404).json({message: e.message});
+    }
 })
 
 app.post('/api/posts/:id/comments', async(req, res) => {

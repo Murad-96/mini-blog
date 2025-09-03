@@ -14,6 +14,8 @@ export default function PostList (props) {
                     id={p._id} 
                     title={p.title} 
                     content={p.content} 
+                    author={p.author}
+                    date={p.date}
                     comments={p.comments}
                     addComment={props.addCommentFn}
                     postDelete={() => handleDelete(p._id)} />

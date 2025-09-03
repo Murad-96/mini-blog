@@ -69,7 +69,7 @@ function App() {
 
   const createPost = async (title, content, username) => {
     try {
-      console.log(`Attempting to create a post about: ${title}`)
+      console.log(`Attempting to create a post by ${username} about ${title}`)
       const token = localStorage.getItem("token"); // if JWT is stored in the localStorage
       console.log(`token sent with createPost: ${token}`)
       const response = await fetch(url + '/posts', {

@@ -18,6 +18,7 @@ export default function Post (props) {
         <div className='post'>
             <h2>{props.title}</h2>
             <p>{props.content}</p>
+            <p>{`posted on ${new Date(props.date).toLocaleDateString("en-GB")}  ${new Date(props.date).getHours()}:${new Date(props.date).getMinutes()} by ${props.author}`}</p>
             <button type="submit" onClick={props.postDelete}>Delete</button>   
             <textarea value={commentText} onChange={e => setCommentText(e.target.value)}/>
             <button onClick={handleCreateComment}>Leave comment</button>
