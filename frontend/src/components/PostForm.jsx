@@ -5,12 +5,12 @@ import styles from './PostForm.css'
 export default function PostForm (props) {
     const [postContent, setPostContent] = useState('')
     const [postTitle, setPostTitle] = useState('')
-    const username = useSelector(state => state.user.username)
+    const { username, isLoggedIn } = useSelector((state) => state.user);
 
     return (
         <div>
-            <h3>Create a new post</h3>
-            <form onSubmit={(e) => {
+            <h3>{isLoggedIn ? "Create a new post" : "Login to create a post"}</h3>
+            {isLoggedIn && <form onSubmit={(e) => {
                     e.preventDefault();
                     props.newPostFn(postTitle, postContent, username);
                     }}>
@@ -33,7 +33,7 @@ export default function PostForm (props) {
                 <hr/>
                 <button type="reset">Reset edits</button>
                 <button type="submit">Save post</button>
-            </form>
+            </form>}
         </div>
     )
 }
