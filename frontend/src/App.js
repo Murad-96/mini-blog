@@ -4,6 +4,7 @@ import PostList from './components/PostList';
 import Header from './components/Header';
 import PostForm from './components/PostForm';
 import { useEffect, useState } from 'react';
+import LoginForm from './components/LoginForm';
 
 function App() {
   const [posts, setPosts] = useState([]);
@@ -13,6 +14,9 @@ function App() {
   const login = async (email, password) => {
     const response = await fetch(url + '/login', {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({email, password})
     })
     if (!response.ok) {
@@ -20,9 +24,26 @@ function App() {
     }
     const data = await response.json();
     const token = data.token;
-    localStorage.setItem(token); // store JWT in localstorage (if server returns it)
+    localStorage.setItem("token", token); // store JWT in localstorage (if server returns it)
     console.log("Stored token:", data.token);
     return data.user;
+  }
+
+  const register = async (username, email, passoword) => {
+    try {
+      const response = await fetch (url + '/login', {
+      method: "POST",
+      body: JSON.stringify({username, email, passoword})
+      });
+      if (!response.ok) {
+        throw new Error("Registration failed")
+      }
+      const data = await response.json();
+      console.log(`registration response: ${data}`)
+    }
+    catch (e) {
+      console.log(e)
+    }
   }
 
   const getPosts = async () => {
@@ -40,8 +61,8 @@ function App() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`, // send the token with authorization header (Option 1)
-        "Credentials": "include"            // 👈 required so the browser sends cookies cross-origin (Option 2)
+        "Authorization": `Bearer ${token}`, // send the token with authorization header (if using localStorage)
+        //"Credentials": "include"            // 👈 required so the browser sends cookies cross-origin (if using cookies)
       },
       body: JSON.stringify({ title: title, content: content, author: "default" })
     })
@@ -100,6 +121,7 @@ function App() {
   return (
     <div>
       <Header/>
+      <LoginForm loginFn={login}/>
       <PostForm newPostFn={createPost}/>
       <PostList posts={posts} deletePostFn={deletePost} addCommentFn={createComment}/>
     </div>
