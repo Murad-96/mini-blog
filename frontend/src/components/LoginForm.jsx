@@ -26,8 +26,8 @@ export default function LoginForm (props) {
         }
         else {
             props.registerFn(username, email, password);
-            setShowRegister(false);
         }
+        
     }
 
     return (
@@ -55,6 +55,8 @@ export default function LoginForm (props) {
                     </input>
                 </label>
                 {<button type="submit">{!showRegister ? "Log in" : "Register"}</button>}
+                <br/>
+                {!showRegister && <button onClick={()=>setShowRegister(true)}>New user</button>}
             </form>) : (
                 <div>
                     <p>Welcome, {username}!</p>
@@ -63,8 +65,7 @@ export default function LoginForm (props) {
                     </button>
                 </div>
             )}
-            {!showRegister && <button onClick={()=>setShowRegister(true)}>New user</button>}
-            <br/>
+            
         </div>
     )
 }

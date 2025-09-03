@@ -25,9 +25,9 @@ export default function Post (props) {
             <p>{props.content}</p>
             <p>{`posted on ${new Date(props.date).toLocaleDateString("en-GB")}  ${new Date(props.date).getHours()}:${new Date(props.date).getMinutes()} by ${props.author}`}</p>
             {isMyPost && <button type="submit" style={{marginRight: "5px"}} onClick={props.postDelete}>Delete</button>}   
-            <textarea value={commentText} onChange={e => setCommentText(e.target.value)}/>
+            {isLoggedIn && <textarea value={commentText} onChange={e => setCommentText(e.target.value)}/>}
             {isLoggedIn && <button className='leaveComment' onClick={handleCreateComment}>Leave comment</button>}
-            <p>Comments</p>
+            {comments.length > 0 && <p>Comments</p>}
             {comments.map(com => (<PostComment  key={com._id} id={com._id} comment={com.text} author={com.author} />)) }
         </div>
     )

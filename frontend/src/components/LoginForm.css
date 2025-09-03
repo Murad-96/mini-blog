@@ -8,9 +8,11 @@
 }
 
 .email {
-    margin-left: 32px;
+    margin-left: 38px;
+    margin-bottom: 4px;
 }
 
 .userName {
     margin-left: 8px;
+    margin-bottom: 4px;
 }
