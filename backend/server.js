@@ -9,7 +9,7 @@ require('dotenv').config()
 const app = express();
 const port = 3001;
 
-const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "http://localhost:3000"
+const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "https://mini-blog-xi-eight.vercel.app"
 
 app.use(express.json())
 app.use(cors({
