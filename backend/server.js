@@ -13,7 +13,7 @@ const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "https://mini-blog-xi-eig
 
 app.use(express.json())
 app.use(cors({
-    origin: FRONTEND_ORIGIN,
+    origin: "https://mini-blog-xi-eight.vercel.app",
     credentials: true, // allow cookies
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"]
