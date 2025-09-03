@@ -9,7 +9,8 @@ import LoginForm from './components/LoginForm';
 function App() {
   const [posts, setPosts] = useState([]);
 
-  const url = 'http://localhost:3001/api'
+  //const url = 'http://localhost:3001/api'
+  const url = 'https://mini-blog-u2l2.onrender.com/api'
 
   const login = async (email, password) => {
     const response = await fetch(url + '/login', {

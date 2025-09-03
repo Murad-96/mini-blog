@@ -122,6 +122,7 @@ app.get('/api/posts', async (req, res) => {
     res.json(posts);
 })
 
+// only authenticated users can create posts
 app.post('/api/posts', authMiddleware, async (req, res) => {
     const post = new Post({
         title: req.body.title, 
