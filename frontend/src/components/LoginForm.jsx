@@ -1,14 +1,12 @@
 import { useState } from "react";
+import { useSelector, useDispatch } from 'react-redux';
+import { loginUser, logoutUser } from '../store/userSlice';
 
 export default function LoginForm (props) {
 
-    function isTokenStored() {
-        const t = localStorage.getItem("token");
-        console.log(`token in login form: ${t}`)
-        return t && t.length > 0;
-    }
-
-    const [isLoggedIn, setLoggedIn] = useState(isTokenStored())
+    const dispatch = useDispatch();
+    const { isLoggedIn, username } = useSelector((state) => state.user);
+    
     const [email, setEmail] = useState('')
     const [password, setUserPassword] = useState('')
     const [userName, setUserName] = useState('')
@@ -17,10 +15,15 @@ export default function LoginForm (props) {
     return (
         <div>
             {!isLoggedIn ? (
-            <form onSubmit={(e) => {
+            <form onSubmit={async (e) => {
                 e.preventDefault();
-                props.loginFn(email, password);
-                setLoggedIn(isTokenStored())
+                try {
+                    const user = await props.loginFn(email, password);
+                    // Dispatch login action with user data
+                    dispatch(loginUser({ username: user.username }));
+                } catch (error) {
+                    console.error('Login failed:', error);
+                }
             }}>
                  <label>
                     Email:
@@ -35,9 +38,12 @@ export default function LoginForm (props) {
                 </label>
                 <button type="submit">Log in</button>
             </form>) : (
-                <button onClick={()=> localStorage.setItem("token", null)}>
-                    Log out
-                </button>
+                <div>
+                    <p>Welcome, {username}!</p>
+                    <button onClick={() => dispatch(logoutUser())}>
+                        Log out
+                    </button>
+                </div>
             )}
             <button onClick={()=>setShowRegister(true)}>New user</button>
             {showRegister && (

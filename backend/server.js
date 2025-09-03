@@ -53,7 +53,7 @@ function authMiddleware(req, res, next) {
 
 const PostSchema = new mongoose.Schema ({
     title: String,
-    // author: TODO
+    author: String,
     content: String,
     date: Date,
     comments: [ // treated as subdocument by Mongoose - automatically creates an _id field.
@@ -128,6 +128,7 @@ app.post('/api/posts', authMiddleware, async (req, res) => {
     const post = new Post({
         title: req.body.title, 
         content: req.body.content,
+        author: req.body.username,
         date: Date.now()
     })
     await post.save()

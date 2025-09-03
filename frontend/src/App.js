@@ -3,11 +3,15 @@ import './App.css';
 import PostList from './components/PostList';
 import Header from './components/Header';
 import PostForm from './components/PostForm';
+import UserInfo from './components/UserInfo';
 import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { syncLoginStatus } from './store/userSlice';
 import LoginForm from './components/LoginForm';
 
 function App() {
   const [posts, setPosts] = useState([]);
+  const dispatch = useDispatch();
 
   //const url = 'http://localhost:3001/api'
   const url = 'https://mini-blog-u2l2.onrender.com/api'
@@ -63,7 +67,7 @@ function App() {
     
   }
 
-  const createPost = async (title, content) => {
+  const createPost = async (title, content, username) => {
     try {
       console.log(`Attempting to create a post about: ${title}`)
       const token = localStorage.getItem("token"); // if JWT is stored in the localStorage
@@ -75,7 +79,7 @@ function App() {
         "Authorization": `Bearer ${token}`, // send the token with authorization header (if using localStorage)
         //"Credentials": "include"            // 👈 required so the browser sends cookies cross-origin (if using cookies)
       },
-      body: JSON.stringify({ title: title, content: content, author: "default" })
+      body: JSON.stringify({ title: title, content: content, author: username || "anonymous" })
     })
     if (!response.ok) {
       console.log('Failed to create a post.')
@@ -126,13 +130,16 @@ function App() {
   useEffect (() => {
     // fetch blog posts
     getPosts()
-  }, [])
+    // Sync login status from localStorage on app initialization
+    dispatch(syncLoginStatus())
+  }, [dispatch])
   
  
   return (
     <div>
       <Header/>
       <LoginForm loginFn={login} registerFn={register}/>
+      <UserInfo/>
       <PostForm newPostFn={createPost}/>
       <PostList posts={posts} deletePostFn={deletePost} addCommentFn={createComment}/>
     </div>
