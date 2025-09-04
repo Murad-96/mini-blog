@@ -100,6 +100,7 @@ app.post('/api/auth/register', async (req, res) => {
 app.post('/api/login', async (req, res) => {
     try {
         const {email, password} = req.body;
+        console.log(`attempting login: ${email}`)
         const user = await User.findOne({ email });
         if (!user) return res.status(400).json({message: "User not found."});
         const isMatch = bcrypt.compare(password, user.password);
@@ -112,7 +113,7 @@ app.post('/api/login', async (req, res) => {
         res.cookie("access_token", token, { // adds Set-Cookie header
             httpOnly: true,
         })
-        res.json({token, user}) // include JWT token in the response too.
+        res.json({user}) // include JWT token in the response too.
     }   catch (err) {
         res.status(500).json({message: err.message})
     }

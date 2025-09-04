@@ -1,6 +1,6 @@
 ## Mini-blog web app
 
-Users can create posts and comment on others.
+Users can create posts and leave comments. You'll need to register in order to create post - hit the New user button.
 
 ![blog](https://github.com/Murad-96/mini-blog/blob/main/screenshot.png)
 

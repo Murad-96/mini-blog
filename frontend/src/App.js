@@ -13,26 +13,31 @@ function App() {
   const [posts, setPosts] = useState([]);
   const dispatch = useDispatch();
 
-  //const url = 'http://localhost:3001/api'
+  // const url = 'http://localhost:3001/api'
   const url = 'https://mini-blog-u2l2.onrender.com/api'
 
   const login = async (email, password) => {
-    const response = await fetch(url + '/login', {
+    try {
+      const response = await fetch(url + '/login', {
       method: "POST",
+      credentials: "include", // "Please include credentials (cookies, authorization headers, TLS client certificates) when making this request, and also save any credentials that the server sends back in the response."
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({email, password})
-    })
-    if (!response.ok) {
-      throw new Error("Login failed");
+      })
+      if (!response.ok) {
+        throw new Error("Login failed");
+      }
+      const data = await response.json();
+      const token = data.token;
+      console.log(`token received from login: ${token}, storing..`)
+      localStorage.setItem("token", token); // store JWT in localstorage (if server returns it)
+      console.log("Stored token:", data.token);
+      return data.user;
+    } catch (e) {
+      console.log(e.message)
     }
-    const data = await response.json();
-    const token = data.token;
-    console.log(`token received from login: ${token}`)
-    localStorage.setItem("token", token); // store JWT in localstorage (if server returns it)
-    console.log("Stored token:", data.token);
-    return data.user;
   }
 
   const register = async (username, email, password) => {
@@ -74,10 +79,10 @@ function App() {
       console.log(`token sent with createPost: ${token}`)
       const response = await fetch(url + '/posts', {
       method: "POST",
+      credentials: "include",
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`, // send the token with authorization header (if using localStorage)
-        //"Credentials": "include"            // 👈 required so the browser sends cookies cross-origin (if using cookies)
+        "Content-Type": "application/json", // 👈 required so the browser sends cookies cross-origin (if using cookies)
+        //"Authorization": `Bearer ${token}`, // send the token with authorization header (if using localStorage)      // 👈 required so the browser sends cookies cross-origin (if using cookies)
       },
       body: JSON.stringify({ title: title, content: content, author: username || "anonymous" })
     })

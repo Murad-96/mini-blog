@@ -21,7 +21,8 @@ export default function PostForm (props) {
                 </label>
                 <br/>
                 <label>
-                Edit your post:
+                Edit your post below:
+                <br/>
                 <textarea
                     className="postContent"
                     name="postContent"
@@ -32,7 +33,7 @@ export default function PostForm (props) {
                 </label>
                 <hr/>
                 <button type="reset">Reset edits</button>
-                <button type="submit">Save post</button>
+                <button type="submit">Publish post</button>
             </form>}
         </div>
     )

@@ -6,9 +6,15 @@ const isTokenStored = () => {
   return token && token.length > 0 && token !== "null";
 };
 
+// Helper function to get username from localStorage
+const getStoredUsername = () => {
+  const username = localStorage.getItem("username");
+  return username || '';
+};
+
 // Initial state
 const initialState = {
-  username: '',
+  username: getStoredUsername(), // 👈 Get username from localStorage on init
   isLoggedIn: isTokenStored()
 };
 
@@ -19,18 +25,25 @@ const userSlice = createSlice({
     loginUser: (state, action) => {
       state.username = action.payload.username;
       state.isLoggedIn = true;
+      // Store username in localStorage 👈 Add this
+      localStorage.setItem("username", action.payload.username);
     },
     logoutUser: (state) => {
       state.username = '';
       state.isLoggedIn = false;
-      // Clear token from localStorage
+      // Clear both token and username from localStorage 👈 Update this
       localStorage.removeItem("token");
+      localStorage.removeItem("username");
     },
     // Action to sync login status from localStorage (useful on app initialization)
     syncLoginStatus: (state) => {
       state.isLoggedIn = isTokenStored();
       if (!state.isLoggedIn) {
         state.username = '';
+        localStorage.removeItem("username"); // 👈 Clean up username if not logged in
+      } else {
+        // 👈 Add this: restore username if still logged in
+        state.username = getStoredUsername();
       }
     }
   }

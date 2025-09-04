@@ -18,6 +18,7 @@ export default function LoginForm (props) {
         if (!showRegister) { // login
             try {
                     const user = await props.loginFn(email, password);
+                    console.log(`user in loginOrRegister: ${user}`)
                     // Dispatch login action with user data
                     dispatch(loginUser({ username: user.username }));
                 } catch (error) {
@@ -26,6 +27,7 @@ export default function LoginForm (props) {
         }
         else {
             props.registerFn(username, email, password);
+            setShowRegister(false)
         }
         
     }
@@ -39,7 +41,7 @@ export default function LoginForm (props) {
             }}>
                 {showRegister && 
                 <label>
-                    username: 
+                    Username: 
                     <input className="userName" type="text" onChange={(e) => setUserName(e.target.value)}></input>
                 </label>}
                 <br/>
